@@ -1,0 +1,65 @@
+name: New Relic Deployment
+
+on:
+  push:
+    branches:
+      - main  # Replace with the branch you want to trigger deployments from
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Add your build and deployment steps here
+      # For example:
+      # - name: Build and Deploy
+      #   run: |
+      #     npm install
+      #     npm build
+      #     # Your deployment command here
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14  # Adjust the Node.js version as needed
+
+      - name: Install dependencies
+        run: |
+          npm install  # Use your package manager's command if not npm
+
+      - name: Build
+        run: |
+          npm run build  # Replace with your build command/script
+
+      - name: Deploy
+        run: |
+          # Replace this with your deployment command/script
+          # For example, deploying to a web server, cloud platform, etc.
+          
+name: Deploy to New Relic
+  run: |
+    # Replace the placeholders with actual values
+    APPLICATION_NAME="YourAppName"
+    REVISION="YourGitCommitSHA"
+    NEWRELIC_API_KEY="YourNewRelicAPIKey"
+    
+    newrelic deployments \
+      --appname="$APPLICATION_NAME" \
+      --revision="$REVISION" \
+      --user="$GITHUB_ACTOR" \
+      --description="Deployment from GitHub Actions" \
+      --apikey="$NEWRELIC_API_KEY"
+      - name: Notify New Relic
+        run: |
+          curl -X POST "https://api.newrelic.com/v2/applications/APPLICATION_ID/deployments.json" \
+          -H "X-Api-Key: YOUR_NEWRELIC_API_KEY" \
+          -d "deployment[revision]=${GITHUB_SHA:0:7}" \
+          -d "deployment[user]=${GITHUB_ACTOR}" \
+          -d "deployment[changelog]=${{ github.event.head_commit.message }}"
+
