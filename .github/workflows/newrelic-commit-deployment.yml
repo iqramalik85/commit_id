@@ -1,9 +1,9 @@
-name: New Relic Deployment
+name: Deploy with New Relic Change Tracking
 
 on:
   push:
     branches:
-      - main  # Replace with the branch you want to trigger deployments from
+      - main  # Change to your main branch or the branch you want to trigger on
 
 jobs:
   deploy:
@@ -13,32 +13,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Add your build and deployment steps here
-      # For example:
-      # - name: Build and Deploy
-      #   run: |
-      #     npm install
-      #     npm build
-      #     # Your deployment command here
-      
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14  # Adjust the Node.js version as needed
+
+      - name: Install dependencies
+        run: |
+          npm install  # Use your package manager's command if not npm
+
+      - name: Build
+        run: |
+          npm run build  # Replace with your build command/script
+
       - name: Deploy to New Relic
         run: |
-         # Replace the placeholders with actual values
-         APPLICATION_NAME="testphp/index.php"
-         REVISION="6bb1f7948150b8b211bbcf0fa4d69d963550ae97"
-         NEWRELIC_API_KEY="366e2eec8072a7956ebe462c559ebf89FFFFNRAL"
-    
-         newrelic deployments \
-          --appname="$APPLICATION_NAME" \
-          --revision="$REVISION" \
-          --user="$GITHUB_ACTOR" \
-          --description="Deployment from GitHub Actions" \
-          --apikey="$NEWRELIC_API_KEY"
-      - name: Notify New Relic
-        run: |
-          curl -X POST "https://api.newrelic.com/v2/applications/581682573/deployments.json" \
-          -H "X-Api-Key: 366e2eec8072a7956ebe462c559ebf89FFFFNRAL" \
-          -d "deployment[revision]=${GITHUB_SHA:0:7}" \
-          -d "deployment[user]=${GITHUB_ACTOR}" \
-          -d "deployment[changelog]=${{ github.event.head_commit.message }}"
+          APPLICATION_NAME="testphp/index.php"  # Replace with your New Relic application name
+          REVISION=$(6bb1f7948150b8b211bbcf0fa4d69d963550ae97)  # Use the current Git commit SHA
+          NEWRELIC_API_KEY="366e2eec8072a7956ebe462c559ebf89FFFFNRAL"  # Replace with your New Relic API key
 
+          # Install the New Relic CLI
+          npm install -g newrelic
+
+          # Authenticate with your New Relic account (you may need to run 'newrelic auth' separately)
+          # newrelic auth
+
+          # Record the deployment in New Relic
+          newrelic deployments \
+            --appname="$APPLICATION_NAME" \
+            --revision="$REVISION" \
+            --user="$GITHUB_ACTOR" \
+            --description="Deployment from GitHub Actions" \
+            --apikey="$NEWRELIC_API_KEY"
