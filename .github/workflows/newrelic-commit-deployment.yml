@@ -21,9 +21,6 @@ jobs:
       #     npm build
       #     # Your deployment command here
 
-      - name: Checkout code
-        uses: actions/checkout@v2
-
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -35,30 +32,25 @@ jobs:
 
       - name: Build
         run: |
-          npm run build  # Replace with your build command/script
-
-      - name: Deploy
-        run: |
-          # Replace this with your deployment command/script
-          # For example, deploying to a web server, cloud platform, etc.
+          npm run build  # Replace with your build command/script  
           
-name: Deploy to New Relic
-  run: |
-    # Replace the placeholders with actual values
-    APPLICATION_NAME="YourAppName"
-    REVISION="YourGitCommitSHA"
-    NEWRELIC_API_KEY="YourNewRelicAPIKey"
+      - name: Deploy to New Relic
+        run: |
+         # Replace the placeholders with actual values
+         APPLICATION_NAME="testphp/index.php"
+         REVISION="6bb1f7948150b8b211bbcf0fa4d69d963550ae97"
+         NEWRELIC_API_KEY="366e2eec8072a7956ebe462c559ebf89FFFFNRAL"
     
-    newrelic deployments \
-      --appname="$APPLICATION_NAME" \
-      --revision="$REVISION" \
-      --user="$GITHUB_ACTOR" \
-      --description="Deployment from GitHub Actions" \
-      --apikey="$NEWRELIC_API_KEY"
+         newrelic deployments \
+          --appname="$APPLICATION_NAME" \
+          --revision="$REVISION" \
+          --user="$GITHUB_ACTOR" \
+          --description="Deployment from GitHub Actions" \
+          --apikey="$NEWRELIC_API_KEY"
       - name: Notify New Relic
         run: |
-          curl -X POST "https://api.newrelic.com/v2/applications/APPLICATION_ID/deployments.json" \
-          -H "X-Api-Key: YOUR_NEWRELIC_API_KEY" \
+          curl -X POST "https://api.newrelic.com/v2/applications/581682573/deployments.json" \
+          -H "X-Api-Key: 366e2eec8072a7956ebe462c559ebf89FFFFNRAL" \
           -d "deployment[revision]=${GITHUB_SHA:0:7}" \
           -d "deployment[user]=${GITHUB_ACTOR}" \
           -d "deployment[changelog]=${{ github.event.head_commit.message }}"
